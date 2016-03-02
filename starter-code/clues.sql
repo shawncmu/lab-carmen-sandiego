@@ -1,38 +1,58 @@
 -- Clue #1: We recently got word that someone fitting Carmen Sandiego's description has been
 -- traveling through Southern Europe. She's most likely traveling someplace where she won't be noticed,
 -- so find the least populated country in Southern Europe, and we'll start looking for her there.
+-- \d country - show all columns in country
+-- \d countrylanguage
 
+SELECT name, region, population FROM country WHERE region = 'Southern Europe' ORDER BY population ASC;
 
+--VATICAN
 
 -- Clue #2: Now that we're here, we have insight that Carmen was seen attending language classes in
 -- this country's officially recognized language. Check our databases and find out what language is
 -- spoken in this country, so we can call in a translator to work with you.
 
+SELECT * FROM countrylanguage WHERE countrycode = 'VAT';
 
+--ITALIAN
 
 -- Clue #3: We have new news on the classes Carmen attended – our gumshoes tell us she's moved on
 -- to a different country, a country where people speak only the language she was learning. Find out which
 --  nearby country speaks nothing but that language.
 
+SELECT * FROM countrylanguage WHERE language = 'Italian' AND percentage=100;
+SELECT name FROM country WHERE code='SMR';
 
+--SMR / SAN MARINO
 
 -- Clue #4: We're booking the first flight out – maybe we've actually got a chance to catch her this time.
  -- There are only two cities she could be flying to in the country. One is named the same as the country – that
  -- would be too obvious. We're following our gut on this one; find out what other city in that country she might
  --  be flying to.
 
+SELECT * FROM city WHERE countrycode='SMR';
 
+--SERRAVALE
 
 -- Clue #5: Oh no, she pulled a switch – there are two cities with very similar names, but in totally different
 -- parts of the globe! She's headed to South America as we speak; go find a city whose name is like the one we were
 -- headed to, but doesn't end the same. Find out the city, and do another search for what country it's in. Hurry!
 
+SELECT * FROM city WHERE name LIKE 'Serra%';
 
+--BRA
+
+SELECT * FROM country WHERE code='BRA';
+
+--BRAZIL
 
 -- Clue #6: We're close! Our South American agent says she just got a taxi at the airport, and is headed towards
  -- the capital! Look up the country's capital, and get there pronto! Send us the name of where you're headed and we'll
  -- follow right behind you!
 
+ SELECT * FROM city WHERE id=211;
+
+--Brasolia
 
 
 -- Clue #7: She knows we're on to her – her taxi dropped her off at the international airport, and she beat us to
@@ -49,9 +69,38 @@
 -- So I'm off to add one to the population I find
 -- In a city of ninety-one thousand and now, eighty five.
 
+SELECT * FROM city WHERE population = 91084;
+
+--SANTA MONICA USA
 
 -- We're counting on you, gumshoe. Find out where she's headed, send us the info, and we'll be sure to meet her at the gates with bells on.
 
+-- She's in SANTA MONICA USA!
 
+ADDITIONAL CHALLENGES:
 
--- She's in ____________________________!
+-- 1. List the distinct regions in the Country table.
+
+1. SELECT DISTINCT region FROM country;
+
+-- 2. How many countries are located in European regions?
+
+2. SELECT COUNT (*) FROM country WHERE continent='Europe';
+
+-- 3. Find the total population of all countries group by regions.
+
+3. SELECT DISTINCT region, SUM (population) AS total FROM country GROUP BY region;
+
+-- 4. Use one query to answer the following 2 questions
+--     i.  Find the countries which have the most spoken languages used
+--     ii. Find the maximum number of languages you can use in one country
+
+4. SELECT countrycode, COUNT(language) AS count_language FROM countrylanguage GROUP BY countrycode ORDER BY count_language DESC;
+
+-- 5. Find all the Asia countries that went independent from 1940 to 1950. Order the result by the year of independence.
+
+5. SELECT name, continent, indepyear FROM country WHERE continent='Asia' AND indepyear BETWEEN 1940 AND 1950 ORDER BY indepyear ASC;
+
+-- 6. Find all the countries that do not use English at all
+
+6. SELECT countrycode, language, percentage FROM countrylanguage WHERE (language = 'English' AND percentage=0) OR language != 'English' ORDER BY countrycode ASC;
